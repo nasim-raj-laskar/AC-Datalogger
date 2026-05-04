@@ -67,6 +67,29 @@ class SPageFilePhysics(ctypes.Structure):
     ]
 
 
+class SPageFileStatic(ctypes.Structure):
+    _pack_ = 4
+    _fields_ = [
+        ("smVersion",           ctypes.c_wchar * 15),
+        ("acVersion",           ctypes.c_wchar * 15),
+        ("numberOfSessions",    ctypes.c_int),
+        ("numCars",             ctypes.c_int),
+        ("carModel",            ctypes.c_wchar * 33),
+        ("track",               ctypes.c_wchar * 33),
+        ("playerName",          ctypes.c_wchar * 33),
+        ("playerSurname",       ctypes.c_wchar * 33),
+        ("playerNick",          ctypes.c_wchar * 33),
+        ("sectorCount",         ctypes.c_int),
+        ("maxTorque",           ctypes.c_float),
+        ("maxPower",            ctypes.c_float),
+        ("maxRpm",              ctypes.c_int),
+        ("maxFuel",             ctypes.c_float),
+        ("suspensionMaxTravel", ctypes.c_float * 4),
+        ("tyreRadius",         ctypes.c_float * 4),
+        ("trackConfiguration", ctypes.c_wchar * 33),
+    ]
+
+
 class SPageFileGraphic(ctypes.Structure):
     _pack_ = 4
     _fields_ = [

@@ -2,10 +2,11 @@ import mmap
 import ctypes
 import time
 import os
+import json
 import pandas as pd
 from datetime import datetime
 
-from src.shared_memory import SPageFilePhysics, SPageFileGraphic
+from src.shared_memory import SPageFilePhysics, SPageFileGraphic, SPageFileStatic
 from src.sampler import extract_sample
 
 
@@ -19,9 +20,21 @@ def record(cfg):
     try:
         shm_physics = mmap.mmap(-1, ctypes.sizeof(SPageFilePhysics), shm_cfg["physics_map"])
         shm_graphic = mmap.mmap(-1, ctypes.sizeof(SPageFileGraphic), shm_cfg["graphic_map"])
+        shm_static  = mmap.mmap(-1, ctypes.sizeof(SPageFileStatic),  shm_cfg["static_map"])
     except Exception:
         print("Could not connect. Is Assetto Corsa running?")
         return
+
+    static = SPageFileStatic.from_buffer_copy(shm_static)
+    session_meta = {
+        "car":                static.carModel,
+        "track":              static.track,
+        "track_configuration": static.trackConfiguration,
+        "max_rpm":            static.maxRpm,
+        "max_power_w":        static.maxPower,
+        "max_torque_nm":      static.maxTorque,
+        "max_fuel_kg":        static.maxFuel,
+    }
 
     data_buffer = []
     print("Connected! Waiting for you to hit the track...")
@@ -39,19 +52,24 @@ def record(cfg):
 
     except KeyboardInterrupt:
         print(f"\nRecording stopped. Processing {len(data_buffer)} data points...")
-        _save(data_buffer, out_cfg)
+        _save(data_buffer, session_meta, out_cfg)
 
 
-def _save(data_buffer, out_cfg):
+def _save(data_buffer, session_meta, out_cfg):
     if not data_buffer:
         print("No data was recorded. Did you drive out of the pits?")
         return
 
     df = pd.DataFrame(data_buffer)
 
-    session_ts  = datetime.now().strftime("%Y%m%d_%H%M%S")
-    session_dir = os.path.join(out_cfg["sessions_dir"], session_ts)
+    car   = session_meta["car"].replace(" ", "_") or "unknown_car"
+    track = session_meta["track"].replace(" ", "_") or "unknown_track"
+    ts    = datetime.now().strftime("%Y%m%d_%H%M%S")
+    session_dir = os.path.join(out_cfg["sessions_dir"], f"{track}_{car}_{ts}")
     os.makedirs(session_dir, exist_ok=True)
+
+    with open(os.path.join(session_dir, "session_info.json"), "w") as f:
+        json.dump(session_meta, f, indent=2)
 
     if out_cfg["save_parquet"]:
         df.to_parquet(os.path.join(session_dir, "telemetry.parquet"), engine="pyarrow")

@@ -1,0 +1,9 @@
+{
+  "car": "ks_corvette_c7r",
+  "track": "ks_monza66",
+  "track_configuration": "",
+  "max_rpm": 6500,
+  "max_power_w": 323091.125,
+  "max_torque_nm": 586.0,
+  "max_fuel_kg": 110.0
+}

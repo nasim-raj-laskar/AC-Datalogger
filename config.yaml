@@ -10,3 +10,4 @@ output:
 shared_memory:
   physics_map:  "Local\\acpmf_physics"
   graphic_map:  "Local\\acpmf_graphic"
+  static_map:   "Local\\acpmf_static"
