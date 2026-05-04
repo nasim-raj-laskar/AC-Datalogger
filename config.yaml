@@ -1,0 +1,12 @@
+recording:
+  speed_threshold_kmh: 1.0   # only record when car is moving above this speed
+  sample_interval_sec: 0.01  # ~100Hz target
+
+output:
+  sessions_dir: sessions      # relative to project root
+  save_parquet: true
+  save_csv: true
+
+shared_memory:
+  physics_map:  "Local\\acpmf_physics"
+  graphic_map:  "Local\\acpmf_graphic"
