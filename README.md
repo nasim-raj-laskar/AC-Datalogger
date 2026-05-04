@@ -4,24 +4,26 @@ A high-frequency telemetry logger for Assetto Corsa that reads directly from the
 
 ## How it works
 
-Assetto Corsa exposes live physics data via Windows shared memory (`acpmf_physics`, `acpmf_graphic`). This tool maps those memory blocks using `mmap` + `ctypes`, polls them at ~65Hz, and writes every sample to a timestamped session folder as both Parquet and CSV.
+Assetto Corsa exposes live physics data via Windows shared memory (`acpmf_physics`, `acpmf_graphic`, `acpmf_static`). This tool maps those memory blocks using `mmap` + `ctypes`, polls them at ~65Hz, and writes every sample to a named session folder as Parquet, CSV, and a JSON metadata file.
 
 No plugins, no modding, no game modification required — just run the script while AC is open.
 
 ```mermaid
 flowchart TD
-    A["AC Physics Engine<br>333Hz"]
-    B["Windows Shared Memory<br>~100Hz"]
-    C["Python mmap poll<br>~65Hz"]
-    D["sessions/YYYYMMDD_HHMMSS"]
+    A["AC Physics Engine\n333Hz"]
+    B["Windows Shared Memory\n~100Hz"]
+    C["Python mmap poll\n~65Hz"]
+    D["sessions/track_car_YYYYMMDD_HHMMSS"]
     E["telemetry.parquet"]
     F["telemetry.csv"]
+    G["session_info.json"]
 
     A --> B
     B --> C
     C --> D
     D --> E
     D --> F
+    D --> G
 ```
 
 ## Requirements
@@ -47,7 +49,7 @@ Connected! Waiting for you to hit the track...
 Press Ctrl+C to stop recording and save the data.
 
 Recording stopped. Processing 7568 data points...
-Saved 7568 rows to sessions/20260504_144401
+Saved 7568 rows to sessions/monza_ferrari_458_gt2_20260504_144401
 ```
 
 ## Project structure
@@ -57,11 +59,12 @@ ac-datalogger/
   main.py               # entry point
   config.yaml           # all tuneable settings
   src/
-    shared_memory.py    # ctypes structs for acpmf_physics and acpmf_graphic
+    shared_memory.py    # ctypes structs for acpmf_physics, acpmf_graphic, acpmf_static
     sampler.py          # extract_sample() — maps struct fields to a flat dict
     logger.py           # record loop and session save logic
   sessions/
-    YYYYMMDD_HHMMSS/
+    track_car_YYYYMMDD_HHMMSS/
+      session_info.json
       telemetry.parquet
       telemetry.csv
 ```
@@ -83,6 +86,7 @@ output:
 shared_memory:
   physics_map: "Local\\acpmf_physics"
   graphic_map: "Local\\acpmf_graphic"
+  static_map:  "Local\\acpmf_static"
 ```
 
 ## Captured features (83 total)
@@ -124,6 +128,22 @@ df.index = pd.to_datetime(df.index, unit="s")
 df = df.resample("10ms").interpolate()  # uniform 100Hz
 ```
 
+## Session metadata
+
+At the start of each session, `acpmf_static` is read once and saved as `session_info.json`:
+
+```json
+{
+  "car": "ferrari_458_gt2",
+  "track": "monza",
+  "track_configuration": "gp",
+  "max_rpm": 9000,
+  "max_power_w": 373000.0,
+  "max_torque_nm": 440.0,
+  "max_fuel_kg": 120.0
+}
+```
+
 ## Shared memory reference
 
 AC exposes three shared memory pages. This tool uses two:
@@ -132,6 +152,6 @@ AC exposes three shared memory pages. This tool uses two:
 |---|---|---|
 | Physics | `acpmf_physics` | All real-time car physics data |
 | Graphics | `acpmf_graphic` | Session state, lap times, position |
-| Static | `acpmf_static` | Car/track metadata (not used) |
+| Static | `acpmf_static` | Car/track metadata — read once at session start |
 
-Full struct documentation: [AC Shared Memory reference](https://www.assettocorsa.net/forum/index.php?threads/shared-memory-reference-documentation.58465/)
+
