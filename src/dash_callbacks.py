@@ -1,4 +1,4 @@
-from dash import ClientsideFunction, Input, Output, State, dcc, no_update
+from dash import ClientsideFunction, Input, Output, State, dcc, no_update  #type: ignore
 from .dash_data import load_session
 from .dash_figures import multiline, track_map
 

@@ -33,13 +33,18 @@ flowchart TD
 - Python 3.8+
 
 ```
-pip install pandas pyarrow pyyaml
+pip install pandas pyarrow pyyaml          # logger
+pip install dash plotly                    # dashboard
 ```
 
 ## Usage
 
 ```bash
+# record a session
 python main.py
+
+# view recorded sessions
+python start_dashboard.py
 ```
 
 Drive your laps, then hit `Ctrl+C` to stop. Data is saved automatically.
@@ -56,12 +61,20 @@ Saved 7568 rows to sessions/monza_ferrari_458_gt2_20260504_144401
 
 ```
 ac-datalogger/
-  main.py               # entry point
-  config.yaml           # all tuneable settings
+  main.py               # logger entry point
+  start_dashboard.py    # dashboard entry point
+  config.yaml           # logger settings
+  dashboard.yaml        # dashboard settings
+  assets/
+    clientside.js       # browser-side Plotly marker update
   src/
     shared_memory.py    # ctypes structs for acpmf_physics, acpmf_graphic, acpmf_static
     sampler.py          # extract_sample() — maps struct fields to a flat dict
     logger.py           # record loop and session save logic
+    dash_data.py        # session listing and parquet loading
+    dash_figures.py     # multiline() and track_map() figure factories
+    dash_layout.py      # Dash layout builder
+    dash_callbacks.py   # all server and clientside callbacks
   sessions/
     track_car_YYYYMMDD_HHMMSS/
       session_info.json
@@ -69,9 +82,32 @@ ac-datalogger/
       telemetry.csv
 ```
 
+## Dashboard
+
+```
+pip install dash plotly
+python start_dashboard.py
+```
+
+Open `http://127.0.0.1:8050`. Select a session from the dropdown and explore across four tabs:
+
+| Tab | Contents |
+|---|---|
+| Driver Inputs | Speed, pedals, gear & RPM, steering angle |
+| Vehicle Dynamics | G-forces, angular rates, wheel slip, wheel load |
+| Tyres | Pressure, core temp, surface temp, wear, brake temps |
+| Aero / Misc | Ride height, turbo boost, environment temps, fuel, driver aids |
+| Track Map | `pos_x`/`pos_z` scatter coloured by any channel, with a position scrubber |
+
+The Track Map tab renders the full lap trace coloured by a selectable channel (speed, throttle, brake, lateral G, longitudinal G). A scrub slider moves the car marker along the trace in real-time — the marker update runs entirely in the browser via `Plotly.restyle`, with no server round-trip.
+
+All dashboard settings live in `dashboard.yaml` — server host/port, theme colours, chart dimensions, and the full tab/plot definitions. Adding a new chart or colour channel requires only a YAML edit.
+
 ## Configuration
 
-All settings live in `config.yaml` — no need to touch source code for common changes.
+Logger settings live in `config.yaml`. Dashboard settings live in `dashboard.yaml`.
+
+`config.yaml`:
 
 ```yaml
 recording:
@@ -87,6 +123,35 @@ shared_memory:
   physics_map: "Local\\acpmf_physics"
   graphic_map: "Local\\acpmf_graphic"
   static_map:  "Local\\acpmf_static"
+```
+
+`dashboard.yaml`:
+
+```yaml
+server:
+  host: "127.0.0.1"
+  port: 8050
+  debug: false
+
+theme:
+  background: "#111111"
+  accent:     "#e74c3c"
+  plot_template: "plotly_dark"
+
+charts:
+  height: 280
+
+tabs:
+  - id: inputs
+    label: "Driver Inputs"
+    plots:
+      - { id: speed, title: "Speed", y_label: "km/h", cols: [speed_kmh] }
+      # ...
+
+  - id: map
+    label: "Track Map"
+    type: map
+    color_channels: [speed_kmh, throttle, brake, g_lat, g_lon]
 ```
 
 ## Captured features (83 total)
