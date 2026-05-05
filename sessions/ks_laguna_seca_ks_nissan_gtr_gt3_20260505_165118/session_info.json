@@ -1,0 +1,9 @@
+{
+  "car": "ks_nissan_gtr_gt3",
+  "track": "ks_laguna_seca",
+  "track_configuration": "\u6666\u3fe6",
+  "max_rpm": 7000,
+  "max_power_w": 516401.3125,
+  "max_torque_nm": 285.0,
+  "max_fuel_kg": 132.0
+}

@@ -3,6 +3,7 @@ import ctypes
 import time
 import os
 import json
+import numpy as np
 import pandas as pd
 from datetime import datetime
 
@@ -46,7 +47,7 @@ def record(cfg):
             graphic = SPageFileGraphic.from_buffer_copy(shm_graphic)
 
             if physics.speedKmh > rec_cfg["speed_threshold_kmh"]:
-                data_buffer.append(extract_sample(physics))
+                data_buffer.append(extract_sample(physics, graphic))
 
             time.sleep(rec_cfg["sample_interval_sec"])
 
@@ -61,6 +62,13 @@ def _save(data_buffer, session_meta, out_cfg):
         return
 
     df = pd.DataFrame(data_buffer)
+
+    dt = df["timestamp"].diff().fillna(0)
+    heading = df["heading"]
+    df["pos_x"] = (df["vel_x"] * np.cos(heading) - df["vel_z"] * np.sin(heading))
+    df["pos_z"] = (df["vel_x"] * np.sin(heading) + df["vel_z"] * np.cos(heading))
+    df["pos_x"] = (df["pos_x"] * dt).cumsum()
+    df["pos_z"] = (df["pos_z"] * dt).cumsum()
 
     car   = session_meta["car"].replace(" ", "_") or "unknown_car"
     track = session_meta["track"].replace(" ", "_") or "unknown_track"

@@ -1,10 +1,13 @@
 import time
 
 
-def extract_sample(physics):
+def extract_sample(physics, graphic):
     """Extract all telemetry features from physics shared memory."""
     return {
         "timestamp": time.time(),
+
+        # --- World Position ---
+        "lap_progress":        graphic.normalizedCarPosition,
 
         # --- Core ---
         "speed_kmh":  physics.speedKmh,
