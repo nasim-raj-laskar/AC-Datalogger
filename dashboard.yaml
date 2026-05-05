@@ -1,0 +1,105 @@
+server:
+  host: "127.0.0.1"
+  port: 8050
+  debug: false
+
+theme:
+  background:   "#111111"
+  surface:      "#222222"
+  text:         "#eeeeee"
+  muted:        "#aaaaaa"
+  accent:       "#e74c3c"
+  plot_template: "plotly_dark"
+
+charts:
+  height: 280
+  margin: {l: 40, r: 20, t: 40, b: 40}
+
+tabs:
+  - id: inputs
+    label: "Driver Inputs"
+    plots:
+      - id: speed     
+        title: "Speed"
+        y_label: "km/h"
+        cols: [speed_kmh]
+      - id: pedals
+        title: "Pedals"
+        y_label: ""
+        cols: [throttle, brake, clutch]
+      - id: gear
+        title: "Gear & RPM"
+        y_label: ""
+        cols: [gear, rpms]
+      - id: steer
+        title: "Steering Angle"
+        y_label: "rad"
+        cols: [steer_angle]
+
+  - id: dynamics
+    label: "Vehicle Dynamics"
+    plots:
+      - id: gforce
+        title: "G-Forces"
+        y_label: "g"
+        cols: [g_lat, g_lon, g_vert]
+      - id: rates
+        title: "Angular Rates"
+        y_label: "rad/s"
+        cols: [yaw_rate, pitch_rate, roll_rate]
+      - id: slip
+        title: "Wheel Slip"
+        y_label: ""
+        cols: [slip_fl, slip_fr, slip_rl, slip_rr]
+      - id: load
+        title: "Wheel Load"
+        y_label: "N"
+        cols: [load_fl, load_fr, load_rl, load_rr]
+
+  - id: tyres
+    label: "Tyres"
+    plots:
+      - id: psi
+        title: "Tyre Pressure"
+        y_label: "PSI"
+        cols: [psi_fl, psi_fr, psi_rl, psi_rr]
+      - id: tcore
+        title: "Tyre Core Temp"
+        y_label: "°C"
+        cols: [tyre_core_fl, tyre_core_fr, tyre_core_rl, tyre_core_rr]
+      - id: tsurf
+        title: "Tyre Surface Temp (mid)"
+        y_label: "°C"
+        cols: [temp_m_fl, temp_m_fr, temp_m_rl, temp_m_rr]
+      - id: wear
+        title: "Tyre Wear"
+        y_label: "%"
+        cols: [wear_fl, wear_fr, wear_rl, wear_rr]
+      - id: btemp
+        title: "Brake Temps"
+        y_label: "°C"
+        cols: [brake_temp_fl, brake_temp_fr, brake_temp_rl, brake_temp_rr]
+
+  - id: aero
+    label: "Aero / Misc"
+    plots:
+      - id: ride
+        title: "Ride Height / CG"
+        y_label: "m"
+        cols: [ride_height_f, ride_height_r, cg_height]
+      - id: turbo
+        title: "Turbo Boost"
+        y_label: ""
+        cols: [turbo_boost]
+      - id: env
+        title: "Temperatures"
+        y_label: "°C"
+        cols: [air_temp, road_temp, water_temp]
+      - id: fuel
+        title: "Fuel"
+        y_label: "kg"
+        cols: [fuel]
+      - id: aids
+        title: "Driver Aids"
+        y_label: ""
+        cols: [tc, abs, brake_bias]
