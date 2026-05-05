@@ -1,0 +1,9 @@
+{
+  "car": "ks_mclaren_p1",
+  "track": "ks_nurburgring",
+  "track_configuration": "",
+  "max_rpm": 8250,
+  "max_power_w": 581870.25,
+  "max_torque_nm": 258.0,
+  "max_fuel_kg": 86.0
+}
