@@ -35,5 +35,37 @@ def build_layout(sessions: list[str], cfg: dict) -> html.Div:
                 },
             ),
             html.Div(id="tab-content", style={"marginTop": "12px"}),
+            # map controls — shown only when map tab is active
+            html.Div(
+                id="map-controls",
+                style={"display": "none", "marginTop": "12px", "gap": "12px"},
+                children=[
+                    html.Label("Colour by:", style={"color": theme["muted"], "marginRight": "8px"}),
+                    dcc.Dropdown(
+                        id="map-color-select",
+                        options=[{"label": c, "value": c} for c in cfg["tabs"][next(
+                            i for i, t in enumerate(cfg["tabs"]) if t["id"] == "map"
+                        )]["color_channels"]],
+                        value=cfg["tabs"][next(
+                            i for i, t in enumerate(cfg["tabs"]) if t["id"] == "map"
+                        )]["color_channels"][0],
+                        clearable=False,
+                        style={"color": "#111", "width": "200px", "display": "inline-block"},
+                    ),
+                    html.Div(
+                        id="map-slider-container",
+                        style={"marginTop": "12px"},
+                        children=[
+                            html.Label("Scrub position:", style={"color": theme["muted"]}),
+                            dcc.Slider(
+                                id="map-slider",
+                                min=0, max=100, step=1, value=0,
+                                marks=None,
+                                tooltip={"placement": "bottom", "always_visible": True},
+                            ),
+                        ],
+                    ),
+                ],
+            ),
         ],
     )

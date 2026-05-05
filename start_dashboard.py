@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 import yaml
-from dash import Dash
+from dash import Dash  #type: ignore
 
 sys.path.insert(0, str(Path(__file__).parent))
 

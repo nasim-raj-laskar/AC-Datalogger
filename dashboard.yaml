@@ -80,6 +80,11 @@ tabs:
         y_label: "°C"
         cols: [brake_temp_fl, brake_temp_fr, brake_temp_rl, brake_temp_rr]
 
+  - id: map
+    label: "Track Map"
+    type: map
+    color_channels: [speed_kmh, throttle, brake, g_lat, g_lon]
+
   - id: aero
     label: "Aero / Misc"
     plots:
