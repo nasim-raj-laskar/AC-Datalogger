@@ -1,4 +1,5 @@
 import json
+from functools import lru_cache
 from pathlib import Path
 
 import pandas as pd
@@ -11,6 +12,7 @@ def list_sessions(sessions_dir: str) -> list[str]:
     )
 
 
+@lru_cache(maxsize=4)
 def load_session(sessions_dir: str, name: str) -> tuple[pd.DataFrame, dict]:
     base = Path(sessions_dir) / name
     df = pd.read_parquet(base / "telemetry.parquet")
