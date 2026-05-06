@@ -24,6 +24,15 @@ def build_layout(sessions: list[str], cfg: dict) -> html.Div:
                 id="session-header",
                 style={"margin": "12px 0", "fontSize": "14px", "color": theme["muted"]},
             ),
+            html.Div(
+                id="stats-panel",
+                style={
+                    "display": "flex",
+                    "gap": "12px",
+                    "flexWrap": "wrap",
+                    "marginBottom": "12px",
+                },
+            ),
             dcc.Tabs(
                 id="tabs",
                 value=tabs_cfg[0]["id"],

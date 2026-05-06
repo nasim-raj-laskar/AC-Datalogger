@@ -34,7 +34,7 @@ def record(cfg):
         "max_rpm":            static.maxRpm,
         "max_power_w":        static.maxPower,
         "max_torque_nm":      static.maxTorque,
-        "max_fuel_kg":        static.maxFuel,
+        "max_fuel_l":         static.maxFuel,
     }
 
     data_buffer = []

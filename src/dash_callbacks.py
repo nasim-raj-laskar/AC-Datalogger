@@ -1,4 +1,4 @@
-from dash import ClientsideFunction, Input, Output, State, dcc, no_update  #type: ignore
+from dash import ClientsideFunction, Input, Output, State, dcc, html, no_update  #type: ignore
 from .dash_data import load_session
 from .dash_figures import multiline, track_map
 
@@ -17,7 +17,44 @@ def register_callbacks(app, cfg: dict):
         track = info["track"]
         if info.get("track_configuration"):
             track += f" ({info['track_configuration']})"
-        return f"Car: {info['car']}  |  Track: {track}  |  Max RPM: {info['max_rpm']}  |  Fuel: {info['max_fuel_kg']} kg"
+        return f"Car: {info['car']}  |  Track: {track}  |  Max RPM: {info['max_rpm']}  |  Tank: {info.get('max_fuel_l', info.get('max_fuel_kg', '?'))} L"
+
+    @app.callback(Output("stats-panel", "children"), Input("session-select", "value"))
+    def update_stats(session):
+        if not session:
+            return []
+        df, _ = load_session(sessions_dir, session)
+
+        def _stat(label, value):
+            return html.Div(
+                style={
+                    "backgroundColor": theme["surface"],
+                    "borderRadius": "6px",
+                    "padding": "8px 16px",
+                    "minWidth": "120px",
+                    "textAlign": "center",
+                },
+                children=[
+                    html.Div(value, style={"fontSize": "20px", "fontWeight": "bold", "color": theme["accent"]}),
+                    html.Div(label, style={"fontSize": "11px", "color": theme["muted"], "marginTop": "2px"}),
+                ],
+            )
+
+        duration = df["t"].iloc[-1]
+        top_speed = df["speed_kmh"].max() if "speed_kmh" in df.columns else None
+        max_g_lat = df["g_lat"].abs().max() if "g_lat" in df.columns else None
+        max_g_lon = df["g_lon"].abs().max() if "g_lon" in df.columns else None
+        fuel_used = (df["fuel"].iloc[0] - df["fuel"].iloc[-1]) if "fuel" in df.columns else None
+
+        stats = [
+            _stat("Duration",   f"{duration:.0f} s"),
+            _stat("Samples",    f"{len(df):,}"),
+        ]
+        if top_speed  is not None: stats.append(_stat("Top Speed",   f"{top_speed:.0f} km/h"))
+        if max_g_lat  is not None: stats.append(_stat("Max Lat G",   f"{max_g_lat:.2f} g"))
+        if max_g_lon  is not None: stats.append(_stat("Max Lon G",   f"{max_g_lon:.2f} g"))
+        if fuel_used  is not None: stats.append(_stat("Fuel Used",   f"{fuel_used:.2f} L"))
+        return stats
 
     # show/hide the two content areas based on active tab
     @app.callback(
