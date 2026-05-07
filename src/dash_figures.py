@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -69,3 +72,65 @@ def multiline(df: pd.DataFrame, plot_cfg: dict, theme: dict, chart_cfg: dict) ->
         legend=dict(orientation="h", y=-0.25),
     )
     return fig
+
+
+def power_torque_curves(car_id: str, theme: dict) -> tuple[go.Figure, go.Figure]:
+    """Load power and torque curves from metadata."""
+    meta_path = Path("metadata") / car_id / "specs.json"
+    if not meta_path.exists():
+        return None, None
+    
+    import re
+    raw = meta_path.read_text(encoding="utf-8")
+    raw = re.sub(r'[\x00-\x1f](?=[^"]*")', ' ', raw)
+    specs = json.loads(raw)
+    power_curve = specs.get("powerCurve", [])
+    torque_curve = specs.get("torqueCurve", [])
+    
+    # Power curve
+    power_fig = go.Figure()
+    if power_curve:
+        rpm = [float(p[0]) for p in power_curve]
+        bhp = [float(p[1]) for p in power_curve]
+        power_fig.add_trace(go.Scatter(
+            x=rpm, y=bhp,
+            mode="lines",
+            line=dict(color=theme["accent"], width=3),
+            fill="tozeroy",
+            fillcolor=f"rgba(231, 76, 60, 0.2)",
+            name="Power"
+        ))
+    power_fig.update_layout(
+        title="Power Curve",
+        xaxis_title="RPM",
+        yaxis_title="BHP",
+        template=theme["plot_template"],
+        height=300,
+        margin=dict(l=50, r=20, t=40, b=40),
+        showlegend=False
+    )
+    
+    # Torque curve
+    torque_fig = go.Figure()
+    if torque_curve:
+        rpm = [float(t[0]) for t in torque_curve]
+        nm = [float(t[1]) for t in torque_curve]
+        torque_fig.add_trace(go.Scatter(
+            x=rpm, y=nm,
+            mode="lines",
+            line=dict(color=theme["accent"], width=3),
+            fill="tozeroy",
+            fillcolor=f"rgba(231, 76, 60, 0.2)",
+            name="Torque"
+        ))
+    torque_fig.update_layout(
+        title="Torque Curve",
+        xaxis_title="RPM",
+        yaxis_title="Nm",
+        template=theme["plot_template"],
+        height=300,
+        margin=dict(l=50, r=20, t=40, b=40),
+        showlegend=False
+    )
+    
+    return power_fig, torque_fig

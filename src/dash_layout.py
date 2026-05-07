@@ -49,6 +49,8 @@ def build_layout(sessions: list[str], cfg: dict) -> html.Div:
             ),
             dcc.Store(id="map-pos-store"),
             dcc.Store(id="map-dummy"),
+            # overview tab — permanently in DOM, hidden/shown via style
+            html.Div(id="overview-tab-content", style={"display": "none", "marginTop": "12px"}),
             # regular tab content (non-map tabs)
             html.Div(id="tab-content", style={"marginTop": "12px"}),
             # map tab — permanently in DOM, hidden/shown via style

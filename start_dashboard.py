@@ -3,6 +3,7 @@ from pathlib import Path
 
 import yaml
 from dash import Dash  #type: ignore
+from flask import send_from_directory  #type: ignore
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -20,6 +21,12 @@ with open("dashboard.yaml") as f:
 cfg = {**dash_cfg, "output": app_cfg["output"]}
 
 app = Dash(__name__)
+
+# serve metadata folder (car images, logos, track previews)
+@app.server.route("/metadata/<path:filename>")
+def serve_metadata(filename):
+    return send_from_directory(Path("metadata").resolve(), filename)
+
 app.layout = build_layout(list_sessions(app_cfg["output"]["sessions_dir"]), cfg)
 register_callbacks(app, cfg)
 
