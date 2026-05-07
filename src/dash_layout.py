@@ -5,6 +5,10 @@ def build_layout(sessions: list[str], cfg: dict) -> html.Div:
     theme = cfg["theme"]
     tabs_cfg = cfg["tabs"]
 
+    # extract map tab config once
+    map_tab = next((t for t in tabs_cfg if t["id"] == "map"), None)
+    map_color_channels = map_tab["color_channels"] if map_tab else ["speed_kmh"]
+
     return html.Div(
         style={
             "fontFamily": "sans-serif",
@@ -58,12 +62,8 @@ def build_layout(sessions: list[str], cfg: dict) -> html.Div:
                             html.Label("Colour by:", style={"color": theme["muted"]}),
                             dcc.Dropdown(
                                 id="map-color-select",
-                                options=[{"label": c, "value": c} for c in cfg["tabs"][next(
-                                    i for i, t in enumerate(cfg["tabs"]) if t["id"] == "map"
-                                )]["color_channels"]],
-                                value=cfg["tabs"][next(
-                                    i for i, t in enumerate(cfg["tabs"]) if t["id"] == "map"
-                                )]["color_channels"][0],
+                                options=[{"label": c, "value": c} for c in map_color_channels],
+                                value=map_color_channels[0],
                                 clearable=False,
                                 style={"color": "#111", "width": "200px"},
                             ),
