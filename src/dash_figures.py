@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -6,9 +7,15 @@ def track_map(df: pd.DataFrame, idx: int, color_col: str, theme: dict) -> go.Fig
     """Full track trace coloured by `color_col`, with a marker at sample `idx`."""
     fig = go.Figure()
 
+    # rotate 45° counterclockwise
+    angle = np.pi / 2
+    cos_a, sin_a = np.cos(angle), np.sin(angle)
+    x_rot = df["pos_x"] * cos_a - df["pos_z"] * sin_a
+    z_rot = df["pos_x"] * sin_a + df["pos_z"] * cos_a
+
     # track trace coloured by chosen channel
     fig.add_trace(go.Scattergl(
-        x=df["pos_x"], y=df["pos_z"],
+        x=x_rot, y=z_rot,
         mode="markers",
         marker=dict(
             size=3,
@@ -24,8 +31,10 @@ def track_map(df: pd.DataFrame, idx: int, color_col: str, theme: dict) -> go.Fig
 
     # car position marker
     row = df.iloc[idx]
+    marker_x = row["pos_x"] * cos_a - row["pos_z"] * sin_a
+    marker_z = row["pos_x"] * sin_a + row["pos_z"] * cos_a
     fig.add_trace(go.Scatter(
-        x=[row["pos_x"]], y=[row["pos_z"]],
+        x=[marker_x], y=[marker_z],
         mode="markers",
         marker=dict(size=14, color=theme["accent"], symbol="circle", line=dict(width=2, color="white")),
         name="car",

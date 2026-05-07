@@ -102,8 +102,13 @@ def register_callbacks(app, cfg: dict):
         df, _ = load_session(sessions_dir, session)
         if "pos_x" not in df.columns or "pos_z" not in df.columns:
             return no_update, no_update, no_update
+        import numpy as np
+        angle = np.pi / 2
+        cos_a, sin_a = np.cos(angle), np.sin(angle)
+        x_rot = (df["pos_x"] * cos_a - df["pos_z"] * sin_a).tolist()
+        z_rot = (df["pos_x"] * sin_a + df["pos_z"] * cos_a).tolist()
         fig   = track_map(df, 0, color_col or "speed_kmh", theme)
-        store = {"pos_x": df["pos_x"].tolist(), "pos_z": df["pos_z"].tolist()}
+        store = {"pos_x": x_rot, "pos_z": z_rot}
         return fig, len(df) - 1, store
 
     # move car marker — pure JS, no server round-trip
