@@ -67,14 +67,21 @@ ac-datalogger/
   dashboard.yaml        # dashboard settings
   assets/
     clientside.js       # browser-side Plotly marker update
+  metadata/
+    {car_id}/
+      {car_id}.jpg      # car render image
+      {brand}.png       # brand logo
+      specs.json        # car name, description, tags, specs, power/torque curves
+    track/
+      {track_id}.png    # track layout image
   src/
     shared_memory.py    # ctypes structs for acpmf_physics, acpmf_graphic, acpmf_static
     sampler.py          # extract_sample() — maps struct fields to a flat dict
     logger.py           # record loop and session save logic
     dash_data.py        # session listing and parquet loading
-    dash_figures.py     # multiline() and track_map() figure factories
+    dash_figures.py     # multiline(), track_map(), power_torque_curves() figure factories
     dash_layout.py      # Dash layout builder
-    dash_callbacks.py   # all server and clientside callbacks
+    dash_callbacks.py   # all server and clientside callbacks, including build_overview()
   sessions/
     track_car_YYYYMMDD_HHMMSS/
       session_info.json
@@ -89,15 +96,28 @@ pip install dash plotly
 python start_dashboard.py
 ```
 
-Open `http://127.0.0.1:8050`. Select a session from the dropdown and explore across four tabs:
+Open `http://127.0.0.1:8050`. Select a session from the dropdown and explore across six tabs:
 
 | Tab | Contents |
 |---|---|
+| Overview | Hero header, key specs, power & torque curves, session KPIs, track preview |
 | Driver Inputs | Speed, pedals, gear & RPM, steering angle |
 | Vehicle Dynamics | G-forces, angular rates, wheel slip, wheel load |
 | Tyres | Pressure, core temp, surface temp, wear, brake temps |
 | Aero / Misc | Ride height, turbo boost, environment temps, fuel, driver aids |
 | Track Map | `pos_x`/`pos_z` scatter coloured by any channel, with a position scrubber |
+
+### Overview tab
+
+The Overview tab is the default landing page for each session. It is built entirely from session telemetry and the `metadata/` folder — no extra configuration needed.
+
+| Section | Contents |
+|---|---|
+| Hero | Car render image, brand logo, car name, class/tag badges, description, track name, session duration |
+| Key Specs | Power, torque, weight, power-to-weight ratio, top speed, drive type |
+| Power & Torque Curves | Interactive BHP and Nm vs RPM charts from `specs.json` |
+| Session Summary | Top speed, avg speed, fuel used, max lat G, max long G, peak RPM, brake usage %, throttle usage % |
+| Track Preview | Track layout image from `metadata/track/` |
 
 The Track Map tab renders the full lap trace coloured by a selectable channel (speed, throttle, brake, lateral G, longitudinal G). A scrub slider moves the car marker along the trace in real-time — the marker update runs entirely in the browser via `Plotly.restyle`, with no server round-trip.
 
@@ -142,6 +162,10 @@ charts:
   height: 280
 
 tabs:
+  - id: overview
+    label: "Overview"
+    type: overview
+
   - id: inputs
     label: "Driver Inputs"
     plots:
@@ -153,6 +177,31 @@ tabs:
     type: map
     color_channels: [speed_kmh, throttle, brake, g_lat, g_lon]
 ```
+
+### metadata/specs.json schema
+
+Each car under `metadata/{car_id}/specs.json` should follow this structure:
+
+```json
+{
+  "name": "Nissan GT-R GT3",
+  "brand": "Nissan",
+  "description": "Long-form car description text.",
+  "tags": ["#GTE-GT3", "rwd", "race", "sequential"],
+  "class": "race",
+  "specs": {
+    "bhp": "600bhp",
+    "torque": "700Nm",
+    "weight": "1300kg",
+    "topspeed": "280+km/h",
+    "pwratio": "2.17kg/hp"
+  },
+  "powerCurve":  [["0", "0"], ["1000", "21"], ["7500", "553"]],
+  "torqueCurve": [["0", "0"], ["1000", "149"], ["7500", "525"]]
+}
+```
+
+Track preview images live at `metadata/track/{track_id}.png`. The Flask route `/metadata/<path>` serves all assets in this folder to the browser.
 
 ## Captured features (83 total)
 
