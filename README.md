@@ -107,6 +107,14 @@ Open `http://127.0.0.1:8050`. Select a session from the dropdown and explore acr
 | Aero / Misc | Ride height, turbo boost, environment temps, fuel, driver aids |
 | Track Map | `pos_x`/`pos_z` scatter coloured by any channel, with a position scrubber |
 
+![Overview](media/overview.png)
+![Overview (continued)](media/overview2.png)
+![Driver Inputs](media/driver_inputs.png)
+![Vehicle Dynamics](media/vehicle_dynamics.png)
+![Tyres](media/typres.png)
+![Aero / Misc](media/aero-mics.png)
+![Track Map](media/track_map.png)
+
 ### Overview tab
 
 The Overview tab is the default landing page for each session. It is built entirely from session telemetry and the `metadata/` folder — no extra configuration needed.
