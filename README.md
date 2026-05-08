@@ -107,14 +107,6 @@ Open `http://127.0.0.1:8050`. Select a session from the dropdown and explore acr
 | Aero / Misc | Ride height, turbo boost, environment temps, fuel, driver aids |
 | Track Map | `pos_x`/`pos_z` scatter coloured by any channel, with a position scrubber |
 
-![Overview](media/overview.png)
-![Overview (continued)](media/overview2.png)
-![Driver Inputs](media/driver_inputs.png)
-![Vehicle Dynamics](media/vehicle_dynamics.png)
-![Tyres](media/typres.png)
-![Aero / Misc](media/aero-mics.png)
-![Track Map](media/track_map.png)
-
 ### Overview tab
 
 The Overview tab is the default landing page for each session. It is built entirely from session telemetry and the `metadata/` folder — no extra configuration needed.
@@ -127,7 +119,16 @@ The Overview tab is the default landing page for each session. It is built entir
 | Session Summary | Top speed, avg speed, fuel used, max lat G, max long G, peak RPM, brake usage %, throttle usage % |
 | Track Preview | Track layout image from `metadata/track/` |
 
+![Overview](media/overview.png)
+
 The Track Map tab renders the full lap trace coloured by a selectable channel (speed, throttle, brake, lateral G, longitudinal G). A scrub slider moves the car marker along the trace in real-time — the marker update runs entirely in the browser via `Plotly.restyle`, with no server round-trip.
+
+| | |
+|---|---|
+| ![Driver Inputs](media/driver_inputs.png) | ![Vehicle Dynamics](media/vehicle_dynamics.png) |
+| ![Tyres](media/typres.png) | ![Aero / Misc](media/aero-mics.png) |
+
+![Track Map](media/track_map.png)
 
 All dashboard settings live in `dashboard.yaml` — server host/port, theme colours, chart dimensions, and the full tab/plot definitions. Adding a new chart or colour channel requires only a YAML edit.
 
