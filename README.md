@@ -6,7 +6,17 @@
 </p>
 
 <p align="center">
-  <img src="media/overview.png" width="520" alt="Dashboard Overview"/>
+  <img src="https://img.shields.io/badge/platform-Windows-0078D4?logo=windows&logoColor=white" alt="Platform"/>
+  <img src="https://img.shields.io/badge/python-3.8%2B-3776AB?logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/sample_rate-~65Hz-brightgreen" alt="Sample Rate"/>
+  <img src="https://img.shields.io/badge/features-83-blueviolet" alt="Features"/>
+  <img src="https://img.shields.io/badge/output-Parquet%20%7C%20CSV-orange?logo=apacheparquet&logoColor=white" alt="Output"/>
+  <img src="https://img.shields.io/badge/dashboard-Dash%20%2B%20Plotly-00B4D8?logo=plotly&logoColor=white" alt="Dashboard"/>
+  <img src="https://img.shields.io/badge/no_plugins-required-success" alt="No Plugins"/>
+</p>
+
+<p align="center">
+  <img src="media/overview.png" width="720" alt="Dashboard Overview"/>
 </p>
 
 ---
@@ -19,37 +29,37 @@ No plugins, no modding, no game modification required — just run the script wh
 
 ```mermaid
 flowchart TD
-    subgraph AC ["Assetto Corsa Process"]
-        PHY["Physics Engine\n333Hz internal tick"]
+    subgraph AC ["Assetto Corsa"]
+        PHY["Physics Engine"]
     end
 
-    subgraph WinKernel ["Windows Kernel — Named Shared Memory"]
-        SMP["acpmf_physics\nSPageFilePhysics · ctypes struct"]
-        SMG["acpmf_graphic\nSPageFileGraphic · ctypes struct"]
-        SMS["acpmf_static\nSPageFileStatic · read once"]
+    subgraph WinKernel ["Named Shared Memory"]
+        SMP["acpmf_physics"]
+        SMG["acpmf_graphic"]
+        SMS["acpmf_static"]
     end
 
-    subgraph Logger ["logger.py — record()"]
-        POLL["mmap poll loop\ntime.sleep(0.01) · ~65Hz actual"]
-        BUF["data_buffer[]\nin-memory list of dicts"]
-        SAMP["extract_sample(physics, graphic)\nsampler.py · 83 features → flat dict"]
+    subgraph Logger ["record()"]
+        POLL["mmap poll · ~65Hz"]
+        SAMP["extract_sample()"]
+        BUF["data_buffer[]"]
     end
 
-    subgraph Save ["_save() — on KeyboardInterrupt"]
-        DF["pd.DataFrame(data_buffer)"]
-        POS["pos_x / pos_z\ndead-reckoning via localVelocity × dt"]
-        DIR["sessions/track_car_YYYYMMDD_HHMMSS/"]
-        META["session_info.json\nacpmf_static fields"]
-        PARQ["telemetry.parquet\npyarrow engine"]
+    subgraph Save ["_save()"]
+        DF["DataFrame"]
+        POS["dead-reckon pos_x/z"]
+        DIR["session dir"]
+        META["session_info.json"]
+        PARQ["telemetry.parquet"]
         CSV["telemetry.csv"]
     end
 
-    subgraph Dashboard ["start_dashboard.py — Dash app"]
-        LOAD["dash_data.py\nlist_sessions() · load_parquet()"]
-        FIG["dash_figures.py\nmultiline() · track_map() · power_torque_curves()"]
-        LAY["dash_layout.py\nbuild_layout()"]
-        CB["dash_callbacks.py\nregister_callbacks() · build_overview()"]
-        JS["assets/clientside.js\nPlotly.restyle — zero server round-trip"]
+    subgraph Dashboard ["Dash App"]
+        LOAD["dash_data"]
+        FIG["dash_figures"]
+        LAY["dash_layout"]
+        CB["dash_callbacks"]
+        JS["clientside.js"]
     end
 
     PHY -->|writes| SMP
