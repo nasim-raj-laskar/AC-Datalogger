@@ -6,8 +6,15 @@ server:
 theme:
   background:   "#111111"
   surface:      "#222222"
+  surface2:     "#1a1a1a"
+  deep:         "#0d0d0d"
+  subtle:       "#2a2a2a"
+  border:       "#333333"
   text:         "#eeeeee"
+  text_dim:     "#dddddd"
   muted:        "#aaaaaa"
+  muted2:       "#999999"
+  muted3:       "#555555"
   accent:       "#e74c3c"
   plot_template: "plotly_dark"
 

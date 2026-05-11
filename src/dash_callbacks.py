@@ -5,11 +5,11 @@ from .dash_data import load_session
 from .dash_figures import multiline, track_map, power_torque_curves
 
 
-def _spec_card(value: str, label: str, accent: str, muted: str) -> html.Div:
+def _spec_card(value: str, label: str, theme: dict) -> html.Div:
     return html.Div(
         style={
-            "backgroundColor": "#1a1a1a",
-            "border": f"1px solid #333",
+            "backgroundColor": theme["surface2"],
+            "border": f"1px solid {theme['border']}",
             "borderRadius": "8px",
             "padding": "16px 20px",
             "textAlign": "center",
@@ -17,17 +17,17 @@ def _spec_card(value: str, label: str, accent: str, muted: str) -> html.Div:
             "flex": "1",
         },
         children=[
-            html.Div(value, style={"fontSize": "22px", "fontWeight": "700", "color": accent}),
-            html.Div(label, style={"fontSize": "11px", "color": muted, "marginTop": "4px", "textTransform": "uppercase", "letterSpacing": "0.05em"}),
+            html.Div(value, style={"fontSize": "22px", "fontWeight": "700", "color": theme["accent"]}),
+            html.Div(label, style={"fontSize": "11px", "color": theme["muted"], "marginTop": "4px", "textTransform": "uppercase", "letterSpacing": "0.05em"}),
         ],
     )
 
 
-def _kpi_card(value: str, label: str, accent: str, muted: str) -> html.Div:
+def _kpi_card(value: str, label: str, theme: dict) -> html.Div:
     return html.Div(
         style={
-            "backgroundColor": "#1a1a1a",
-            "border": "1px solid #333",
+            "backgroundColor": theme["surface2"],
+            "border": f"1px solid {theme['border']}",
             "borderRadius": "8px",
             "padding": "14px 18px",
             "textAlign": "center",
@@ -35,31 +35,29 @@ def _kpi_card(value: str, label: str, accent: str, muted: str) -> html.Div:
             "minWidth": "120px",
         },
         children=[
-            html.Div(value, style={"fontSize": "20px", "fontWeight": "700", "color": accent}),
-            html.Div(label, style={"fontSize": "11px", "color": muted, "marginTop": "4px", "textTransform": "uppercase", "letterSpacing": "0.05em"}),
+            html.Div(value, style={"fontSize": "20px", "fontWeight": "700", "color": theme["accent"]}),
+            html.Div(label, style={"fontSize": "11px", "color": theme["muted"], "marginTop": "4px", "textTransform": "uppercase", "letterSpacing": "0.05em"}),
         ],
     )
 
 
-def _section_title(text: str, muted: str) -> html.Div:
+def _section_title(text: str, theme: dict) -> html.Div:
     return html.Div(
         text,
         style={
             "fontSize": "11px",
             "fontWeight": "600",
-            "color": muted,
+            "color": theme["muted"],
             "textTransform": "uppercase",
             "letterSpacing": "0.12em",
             "marginBottom": "12px",
-            "borderBottom": "1px solid #2a2a2a",
+            "borderBottom": f"1px solid {theme['subtle']}",
             "paddingBottom": "6px",
         },
     )
 
 
 def build_overview(df, info: dict, session: str, theme: dict) -> list:
-    accent = theme["accent"]
-    muted  = theme["muted"]
     car_id = info["car"]
     track_id = info["track"]
 
@@ -92,12 +90,12 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
         html.Span(
             t.lstrip("#").upper(),
             style={
-                "backgroundColor": "#2a2a2a",
-                "border": "1px solid #444",
+                "backgroundColor": theme["subtle"],
+                "border": f"1px solid {theme['border']}",
                 "borderRadius": "4px",
                 "padding": "2px 8px",
                 "fontSize": "10px",
-                "color": muted,
+                "color": theme["muted"],
                 "letterSpacing": "0.06em",
             },
         )
@@ -139,7 +137,7 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
                 },
                 children=[
                     html.Img(src=car_img_path, style={"width": "100%", "height": "100%", "objectFit": "cover", "display": "block"})
-                    if car_img_path else html.Div("No image", style={"color": "#444", "padding": "40px", "textAlign": "center", "backgroundColor": "#0d0d0d", "height": "100%"})
+                    if car_img_path else html.Div("No image", style={"color": theme["border"], "padding": "40px", "textAlign": "center", "backgroundColor": theme["deep"], "height": "100%"})
                 ],
             ),
             # car info panel
@@ -147,7 +145,7 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
                 style={
                     "flex": "3",
                     "minWidth": "300px",
-                    "backgroundColor": "#0d0d0d",
+                    "backgroundColor": theme["deep"],
                     "borderRadius": "12px",
                     "padding": "24px",
                     "display": "flex",
@@ -158,7 +156,7 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
                     html.Div([
                         html.Img(src=logo_img_path, style={"height": "48px", "marginBottom": "8px", "opacity": "0.85"})
                         if logo_img_path else None,
-                        html.Div(car_name, style={"fontSize": "26px", "fontWeight": "700", "color": "#fff", "lineHeight": "1.2"}),
+                        html.Div(car_name, style={"fontSize": "26px", "fontWeight": "700", "color": theme["text"], "lineHeight": "1.2"}),
                     ]),
                     html.Div(
                         style={"display": "flex", "gap": "6px", "flexWrap": "wrap"},
@@ -168,14 +166,14 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
                         clean_desc,
                         style={
                             "fontSize": "12px",
-                            "color": "#999",
+                            "color": theme["muted2"],
                             "lineHeight": "1.7",
                             "flex": "1",
                         },
                     ) if clean_desc else None,
                     html.Div(
                         style={
-                            "borderTop": "1px solid #222",
+                            "borderTop": f"1px solid {theme['surface']}",
                             "paddingTop": "12px",
                             "display": "flex",
                             "gap": "20px",
@@ -183,12 +181,12 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
                         },
                         children=[
                             html.Div([
-                                html.Div("Track", style={"fontSize": "10px", "color": muted, "textTransform": "uppercase", "letterSpacing": "0.08em"}),
-                                html.Div(track_label, style={"fontSize": "14px", "color": "#ddd", "fontWeight": "600"}),
+                                html.Div("Track", style={"fontSize": "10px", "color": theme["muted"], "textTransform": "uppercase", "letterSpacing": "0.08em"}),
+                                html.Div(track_label, style={"fontSize": "14px", "color": theme["text_dim"], "fontWeight": "600"}),
                             ]),
                             html.Div([
-                                html.Div("Duration", style={"fontSize": "10px", "color": muted, "textTransform": "uppercase", "letterSpacing": "0.08em"}),
-                                html.Div(f"{duration:.0f}s", style={"fontSize": "14px", "color": "#ddd", "fontWeight": "600"}),
+                                html.Div("Duration", style={"fontSize": "10px", "color": theme["muted"], "textTransform": "uppercase", "letterSpacing": "0.08em"}),
+                                html.Div(f"{duration:.0f}s", style={"fontSize": "14px", "color": theme["text_dim"], "fontWeight": "600"}),
                             ]),
                         ],
                     ),
@@ -209,10 +207,10 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
     key_specs = html.Div(
         style={"marginBottom": "24px"},
         children=[
-            _section_title("Key Specs", muted),
+            _section_title("Key Specs", theme),
             html.Div(
                 style={"display": "flex", "gap": "10px", "flexWrap": "wrap"},
-                children=[_spec_card(v, l, accent, muted) for v, l in spec_items],
+                children=[_spec_card(v, l, theme) for v, l in spec_items],
             ),
         ],
     )
@@ -222,16 +220,16 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
     curves_section = html.Div(
         style={"marginBottom": "24px"},
         children=[
-            _section_title("Power & Torque Curves", muted),
+            _section_title("Power & Torque Curves", theme),
             html.Div(
                 style={"display": "flex", "gap": "16px", "flexWrap": "wrap"},
                 children=[
                     html.Div(
-                        dcc.Graph(figure=power_fig, config={"displayModeBar": False}) if power_fig else html.Div("No data", style={"color": muted}),
+                        dcc.Graph(figure=power_fig, config={"displayModeBar": False}) if power_fig else html.Div("No data", style={"color": theme["muted"]}),
                         style={"flex": "1", "minWidth": "300px"},
                     ),
                     html.Div(
-                        dcc.Graph(figure=torque_fig, config={"displayModeBar": False}) if torque_fig else html.Div("No data", style={"color": muted}),
+                        dcc.Graph(figure=torque_fig, config={"displayModeBar": False}) if torque_fig else html.Div("No data", style={"color": theme["muted"]}),
                         style={"flex": "1", "minWidth": "300px"},
                     ),
                 ],
@@ -263,10 +261,10 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
     session_summary = html.Div(
         style={"flex": "1", "minWidth": "400px"},
         children=[
-            _section_title("Session Summary", muted),
+            _section_title("Session Summary", theme),
             html.Div(
                 style={"display": "flex", "gap": "10px", "flexWrap": "wrap"},
-                children=[_kpi_card(v, l, accent, muted) for v, l in kpi_items],
+                children=[_kpi_card(v, l, theme) for v, l in kpi_items],
             ),
         ],
     )
@@ -274,10 +272,10 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
     track_preview = html.Div(
         style={"flex": "1", "minWidth": "200px"},
         children=[
-            _section_title("Track Preview", muted),
+            _section_title("Track Preview", theme),
             html.Div(
                 style={
-                    "backgroundColor": "#0d0d0d",
+                    "backgroundColor": theme["deep"],
                     "borderRadius": "12px",
                     "overflow": "hidden",
                     "display": "flex",
@@ -287,7 +285,7 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
                 },
                 children=[
                     html.Img(src=track_img_path, style={"maxWidth": "100%", "maxHeight": "180px", "objectFit": "contain", "display": "block"})
-                    if track_img_path else html.Div("No track preview available", style={"color": "#555", "padding": "40px"})
+                    if track_img_path else html.Div("No track preview available", style={"color": theme["muted3"], "padding": "40px"})
                 ],
             ),
         ],
