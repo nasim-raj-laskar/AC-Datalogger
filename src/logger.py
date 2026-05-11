@@ -72,7 +72,7 @@ def _save(data_buffer, session_meta, out_cfg):
 
     car   = session_meta["car"].replace(" ", "_") or "unknown_car"
     track = session_meta["track"].replace(" ", "_") or "unknown_track"
-    ts    = datetime.now().strftime("%Y%m%d_%H%M%S")
+    ts    = datetime.fromtimestamp(df["wall_time"].iloc[0]).strftime("%Y%m%d_%H%M%S")
     session_dir = os.path.join(out_cfg["sessions_dir"], f"{track}_{car}_{ts}")
     os.makedirs(session_dir, exist_ok=True)
 

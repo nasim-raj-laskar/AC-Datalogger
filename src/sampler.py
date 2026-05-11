@@ -4,7 +4,8 @@ import time
 def extract_sample(physics, graphic):
     """Extract all telemetry features from physics shared memory."""
     return {
-        "timestamp": time.time(),
+        "timestamp": time.monotonic(),
+        "wall_time":  time.time(),
 
         # --- World Position ---
         "lap_progress":        graphic.normalizedCarPosition,
