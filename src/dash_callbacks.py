@@ -6,25 +6,7 @@ from .dash_data import load_session
 from .dash_figures import multiline, track_map, power_torque_curves
 
 
-def _spec_card(value: str, label: str, theme: dict) -> html.Div:
-    return html.Div(
-        style={
-            "backgroundColor": theme["surface2"],
-            "border": f"1px solid {theme['border']}",
-            "borderRadius": "8px",
-            "padding": "16px 20px",
-            "textAlign": "center",
-            "minWidth": "110px",
-            "flex": "1",
-        },
-        children=[
-            html.Div(value, style={"fontSize": "22px", "fontWeight": "700", "color": theme["accent"]}),
-            html.Div(label, style={"fontSize": "11px", "color": theme["muted"], "marginTop": "4px", "textTransform": "uppercase", "letterSpacing": "0.05em"}),
-        ],
-    )
-
-
-def _kpi_card(value: str, label: str, theme: dict) -> html.Div:
+def _stat_card(value: str, label: str, theme: dict, font_size: int = 20) -> html.Div:
     return html.Div(
         style={
             "backgroundColor": theme["surface2"],
@@ -33,10 +15,10 @@ def _kpi_card(value: str, label: str, theme: dict) -> html.Div:
             "padding": "14px 18px",
             "textAlign": "center",
             "flex": "1",
-            "minWidth": "120px",
+            "minWidth": "110px",
         },
         children=[
-            html.Div(value, style={"fontSize": "20px", "fontWeight": "700", "color": theme["accent"]}),
+            html.Div(value, style={"fontSize": f"{font_size}px", "fontWeight": "700", "color": theme["accent"]}),
             html.Div(label, style={"fontSize": "11px", "color": theme["muted"], "marginTop": "4px", "textTransform": "uppercase", "letterSpacing": "0.05em"}),
         ],
     )
@@ -209,7 +191,7 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
             _section_title("Key Specs", theme),
             html.Div(
                 style={"display": "flex", "gap": "10px", "flexWrap": "wrap"},
-                children=[_spec_card(v, l, theme) for v, l in spec_items],
+                children=[_stat_card(v, l, theme, font_size=22) for v, l in spec_items],
             ),
         ],
     )
@@ -263,7 +245,7 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
             _section_title("Session Summary", theme),
             html.Div(
                 style={"display": "flex", "gap": "10px", "flexWrap": "wrap"},
-                children=[_kpi_card(v, l, theme) for v, l in kpi_items],
+                children=[_stat_card(v, l, theme) for v, l in kpi_items],
             ),
         ],
     )
