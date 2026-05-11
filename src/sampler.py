@@ -8,6 +8,7 @@ def extract_sample(physics, graphic):
 
         # --- World Position ---
         "lap_progress":        graphic.normalizedCarPosition,
+        "completed_laps":      graphic.completedLaps,
 
         # --- Core ---
         "speed_kmh":  physics.speedKmh,

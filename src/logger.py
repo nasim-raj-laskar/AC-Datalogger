@@ -20,7 +20,7 @@ def record(cfg):
 
     try:
         shm_physics = mmap.mmap(-1, ctypes.sizeof(SPageFilePhysics), shm_cfg["physics_map"])
-        shm_graphic = mmap.mmap(-1, ctypes.sizeof(SPageFileGraphic), shm_cfg["graphic_map"])
+        shm_graphic = mmap.mmap(-1, 820, shm_cfg["graphic_map"])
         shm_static  = mmap.mmap(-1, ctypes.sizeof(SPageFileStatic),  shm_cfg["static_map"])
     except Exception:
         print("Could not connect. Is Assetto Corsa running?")
