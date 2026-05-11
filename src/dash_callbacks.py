@@ -308,6 +308,14 @@ def register_callbacks(app, cfg: dict):
     tabs_cfg     = cfg["tabs"]
     tab_plots    = {t["id"]: t.get("plots", []) for t in tabs_cfg}
 
+    @app.callback(
+        Output("session-select", "options"),
+        Input("session-refresh", "n_intervals"),
+    )
+    def refresh_sessions(_):
+        from .dash_data import list_sessions as _ls
+        return [{"label": s, "value": s} for s in _ls(sessions_dir)]
+
     @app.callback(Output("session-header", "children"), Input("session-select", "value"))
     def update_header(session):
         if not session:

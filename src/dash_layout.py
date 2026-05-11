@@ -47,6 +47,7 @@ def build_layout(sessions: list[str], cfg: dict) -> html.Div:
                     "background": theme["surface"],
                 },
             ),
+            dcc.Interval(id="session-refresh", interval=5000, n_intervals=0),
             dcc.Store(id="map-pos-store"),
             dcc.Store(id="map-dummy"),
             # overview tab — permanently in DOM, hidden/shown via style
