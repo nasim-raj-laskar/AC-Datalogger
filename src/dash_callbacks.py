@@ -1,6 +1,7 @@
 from dash import ClientsideFunction, Input, Output, State, dcc, html, no_update  #type: ignore
 from pathlib import Path
 import json
+import re
 from .dash_data import load_session
 from .dash_figures import multiline, track_map, power_torque_curves
 
@@ -68,7 +69,6 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
         try:
             raw = meta_path.read_text(encoding="utf-8")
             # strip unescaped control chars (tabs, etc.) inside strings
-            import re
             raw = re.sub(r'[\x00-\x1f](?=[^"]*")', ' ', raw)
             specs_data = json.loads(raw)
         except (json.JSONDecodeError, UnicodeDecodeError):
@@ -111,10 +111,9 @@ def build_overview(df, info: dict, session: str, theme: dict) -> list:
     duration = df["t"].iloc[-1]
 
     # clean description — strip HTML tags, collapse whitespace
-    import re as _re
     raw_desc = specs_data.get("description", "")
-    clean_desc = _re.sub(r"<[^>]+>", " ", raw_desc)
-    clean_desc = _re.sub(r" {2,}", " ", clean_desc).strip()
+    clean_desc = re.sub(r"<[^>]+>", " ", raw_desc)
+    clean_desc = re.sub(r" {2,}", " ", clean_desc).strip()
 
     # ── SECTION 1: Hero ──────────────────────────────────────────────────────
     hero = html.Div(
